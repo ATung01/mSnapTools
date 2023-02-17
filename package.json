@@ -1,0 +1,7 @@
+{
+  "dependencies": {
+    "robotjs": "^0.6.0",
+    "tesseract.js": "^4.0.2"
+  },
+  "type": "module"
+}
