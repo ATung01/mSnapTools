@@ -1,4 +1,10 @@
 import { createWorker } from 'tesseract.js'
+import robot from 'robotjs'
+import GrabImage from './grabImage.js'
+
+// let mousePos = robot.getMousePos()
+
+// console.log(mousePos)
 
 
 
@@ -14,19 +20,19 @@ import { createWorker } from 'tesseract.js'
 //     return image
 //     }
 
-const worker = await createWorker({
-    logger: m => console.log(m)
-});
+
+const worker = await createWorker()
+
+let processedImage = GrabImage(840, 350);
 
 // let processedImg = preprocessImage('images/textTest.png')
 
-(async () => {
-    await worker.load()
+(async function () {
     await worker.loadLanguage('eng')
     await worker.initialize('eng')
-    const { data: { text } } = 
-        await worker.recognize('images/textTest.png')
+    const { data: { text } } = await worker.recognize(processedImage)
     console.log(text)
     await worker.terminate()
 })()
+
 
