@@ -1,5 +1,4 @@
 import { createWorker } from 'tesseract.js'
-import robot from 'robotjs'
 import GrabImage from './grabImage.js'
 
 // let mousePos = robot.getMousePos()
