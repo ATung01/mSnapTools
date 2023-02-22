@@ -1,5 +1,7 @@
 import { createWorker } from 'tesseract.js'
 import GrabImage from './grabImage.js'
+import Jimp from 'jimp'
+import Fs from 'fs'
 
 // let mousePos = robot.getMousePos()
 
@@ -22,9 +24,16 @@ import GrabImage from './grabImage.js'
 
 const worker = await createWorker()
 
-let processedImage = GrabImage(840, 350);
+let processedImage = await (GrabImage())
+
+    // Fs.writeFile('error_check.png', processedImage, err => {
+    //     if (err) {
+    //         console.error(err)
+    //     }
+    // })
 
 // let processedImg = preprocessImage('images/textTest.png')
+console.log("processed image = ", processedImage);
 
 (async function () {
     await worker.loadLanguage('eng')
