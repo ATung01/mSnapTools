@@ -3,7 +3,11 @@ import Jimp from 'jimp'
 import Fs from 'fs'
 
 
-export default async function GrabImage(mousePosX = 840, mousePosY = 350) {
+export default async function GrabImage(mousePosX = 3136, mousePosY = 945) {
+    // textTest.png x = 850, y = 350
+    let mouse = Robot.getMousePos();
+    console.log("Mouse is at x:" + mouse.x + " y:" + mouse.y);
+
 
     function captureImage({ x, y, w, h }) {
         const pic = Robot.screen.capture(x, y, w, h)
@@ -26,7 +30,30 @@ export default async function GrabImage(mousePosX = 840, mousePosY = 350) {
         return image
       }
 
-    let result = captureImage({ x: mousePosX, y: mousePosY, w: 100, h: 50}).write('buffer_data.png')
+    let result = captureImage({ x: mousePosX, y: mousePosY, w: 100, h: 35})
+    result.invert().greyscale().scale(5)
+
+    const threshold = 160;
+
+    // Iterate over all pixels in the image
+    result.scan(0, 0, result.bitmap.width, result.bitmap.height, function(x, y, idx) {
+      // Get the brightness value of the pixel (average of R, G, B values)
+      const brightness = (result.bitmap.data[idx] + result.bitmap.data[idx + 1] + result.bitmap.data[idx + 2]) / 3;
+      
+      // Set the pixel to black (0) or white (255) based on the brightness threshold
+      if (brightness > threshold) {
+        result.bitmap.data[idx] = 255;
+        result.bitmap.data[idx + 1] = 255;
+        result.bitmap.data[idx + 2] = 255;
+      } else {
+        result.bitmap.data[idx] = 0;
+        result.bitmap.data[idx + 1] = 0;
+        result.bitmap.data[idx + 2] = 0;
+      }
+    })
+
+    result.write('buffer_data.png')
+
 
     return result
 }
