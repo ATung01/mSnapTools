@@ -33,7 +33,7 @@ export default async function GrabImage(mousePosX = 3136, mousePosY = 945) {
     let result = captureImage({ x: mousePosX, y: mousePosY, w: 100, h: 35})
     result.invert().greyscale().scale(5)
 
-    const threshold = 160;
+    const threshold = 100;
 
     // Iterate over all pixels in the image
     result.scan(0, 0, result.bitmap.width, result.bitmap.height, function(x, y, idx) {

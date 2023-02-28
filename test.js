@@ -23,5 +23,5 @@ function captureImage({ x, y, w, h }) {
     })
     return image
   }
-  
-  captureImage({ x: 840, y: 350, w: 100, h: 50 }).write('buffer_data.png')
+  console.log(Robot.getMousePos())
+  // captureImage({ x: 840, y: 350, w: 100, h: 50 }).write('buffer_data.png')
