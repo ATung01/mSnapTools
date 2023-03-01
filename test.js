@@ -1,8 +1,6 @@
 import Robot from 'robotjs'
 import Jimp from 'jimp'
 
-
-
 function captureImage({ x, y, w, h }) {
     const pic = Robot.screen.capture(x, y, w, h)
     const width = pic.byteWidth / pic.bytesPerPixel // pic.width is sometimes wrong!

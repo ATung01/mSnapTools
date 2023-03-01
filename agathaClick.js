@@ -4,9 +4,6 @@ import mouseBrain from './mouseBrain.js'
 import rng from './rng.js'
 
 const worker = await createWorker()
-// let processedImage = await (GrabImage(960, 860))
-// let buffer = await processedImage.getBufferAsync('image/png')
-
 
 function delay (time) {
     return new Promise(resolve => setTimeout(resolve, time))
@@ -18,7 +15,6 @@ async function performOCR(buffer) {
     mouseBrain(text, 960, 870)
 }
 
-
 void (async function () {
     await worker.loadLanguage('eng')
     await worker.initialize('eng')
@@ -28,7 +24,7 @@ void (async function () {
     while (true) {
         let processedImage = await (GrabImage(960, 865))
         let buffer = await processedImage.getBufferAsync('image/png')
-        await delay(5000 + rng(3000))
+        await delay(3000 + rng(4000))
         await performOCR(buffer)
     }
     await worker.terminate()
