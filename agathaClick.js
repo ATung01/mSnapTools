@@ -9,10 +9,12 @@ function delay (time) {
     return new Promise(resolve => setTimeout(resolve, time))
 }
 
-async function performOCR(buffer) {
+async function performOCR() {
+    let processedImage = await (GrabImage(960, 865))
+    let buffer = await processedImage.getBufferAsync('image/png')
     const { data: { text } } = await worker.recognize(buffer)
-    console.log("text =", text)
-    mouseBrain(text, 960, 870)
+    await console.log("text =", text)
+    await mouseBrain(text, 960, 870)
 }
 
 void (async function () {
@@ -22,10 +24,8 @@ void (async function () {
         user_defined_dpi: '300'
     })
     while (true) {
-        let processedImage = await (GrabImage(960, 865))
-        let buffer = await processedImage.getBufferAsync('image/png')
-        await delay(3000 + rng(4000))
-        await performOCR(buffer)
+        await delay(3000 + rng(3000))
+        await performOCR()
     }
     await worker.terminate()
 })()

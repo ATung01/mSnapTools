@@ -2,7 +2,7 @@ import Robot from 'robotjs'
 import Jimp from 'jimp'
 
 
-export default async function GrabImage(mousePosX = 3136, mousePosY = 945) {
+export default async function GrabImage(mousePosX, mousePosY) {
     // play button should be 300 pixels left and 120 higher
     let mouse = Robot.getMousePos();
     console.log("Mouse is at x:" + mouse.x + " y:" + mouse.y);
