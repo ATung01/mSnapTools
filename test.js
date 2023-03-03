@@ -38,15 +38,15 @@ const worker = await createWorker()
 let rectangles = [
     {
         left: 960,
-        top: 870,
+        top: 855,
         width: 200,
-        height: 40
+        height: 140
     },
     {
-        left: 960,
-        top: 896,
-        width: 200,
-        height: 40
+        left: 660,
+        top: 740,
+        width: 300,
+        height: 100
     }
 ]
 
@@ -54,23 +54,51 @@ function delay (time) {
     return new Promise(resolve => setTimeout(resolve, time))
 }
 
+function binary(result, threshold = 100) {
+  // const threshold = 95;
+  // Iterate over all pixels in the image
+  result.scan(0, 0, result.bitmap.width, result.bitmap.height, function(x, y, idx) {
+    // Get the brightness value of the pixel (average of R, G, B values)
+    const brightness = (result.bitmap.data[idx] + result.bitmap.data[idx + 1] + result.bitmap.data[idx + 2]) / 3;
+    
+    // Set the pixel to black (0) or white (255) based on the brightness threshold
+    if (brightness > threshold) {
+      result.bitmap.data[idx] = 255;
+      result.bitmap.data[idx + 1] = 255;
+      result.bitmap.data[idx + 2] = 255;
+    } else {
+      result.bitmap.data[idx] = 0;
+      result.bitmap.data[idx + 1] = 0;
+      result.bitmap.data[idx + 2] = 0;
+    }
+  })
+} 
+
+
 async function performOCR() {
   let values = []
   let processedImage = await (captureImage({ x: 0, y: 0, w: size.width, h: size.height }))
   processedImage.write('test_buffer.png')
   let widthOffset = processedImage.bitmap.width / size.width
   let heightOffset = processedImage.bitmap.height / size.height
+  // offsets needed due to Mac screen density, both are around 2x
   console.log("processed image = ", widthOffset, heightOffset)
-  let buffer = await processedImage.getBufferAsync('image/png')
+  // let buffer = await processedImage.getBufferAsync('image/png')
   for (let i = 0; i < rectangles.length; i++) {
-    const { data: { text } } = await worker.recognize(buffer, { rectangle: rectangles[i]})
-    // console.log("data", data)
-    // { rectangle: rectangles[i] }.write(`test_image_${i}.png`)
+
+    const croppedImage = processedImage.clone().crop(rectangles[i].left * widthOffset, rectangles[i].top * heightOffset, rectangles[i].width, rectangles[i].height);
+    croppedImage.invert().greyscale().scale(5)
+    binary(croppedImage)
+    let buffer = await croppedImage.getBufferAsync('image/png')
+
+
+    const { data: { text } } = await worker.recognize(buffer)
     values.push(text)
-    const imageWithRectangle = processedImage.clone().crop(rectangles[i].left * widthOffset, rectangles[i].top * heightOffset, rectangles[i].width, rectangles[i].height)
-    await imageWithRectangle.writeAsync(`image_${i}.png`)
+    // const imageWithRectangle = processedImage.clone().crop(rectangles[i].left * widthOffset, rectangles[i].top * heightOffset, rectangles[i].width, rectangles[i].height)
+
+    await croppedImage.writeAsync(`image_${i}.png`)
   }
-  console.log("values =", values)
+  console.log("values =", values, values[1].length)
   await mouseBrain(text, 960, 870)
 }
 
