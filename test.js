@@ -33,17 +33,17 @@ const worker = await createWorker()
 let rectangles = [
   {
     left: 960,
-    top: 855,
+    top: 865,
     width: 200,
-    height: 140,
+    height: 115,
     subject: 'right corner bright',
-    threshold: 100
+    threshold: 80
   },
   {
     left: 960,
-    top: 855,
+    top: 865,
     width: 200,
-    height: 140,
+    height: 115,
     subject: 'right corner dark',
     threshold: 150
   },
@@ -98,11 +98,12 @@ async function performOCR() {
     await croppedImage.writeAsync(`image_${i}.png`)
   }
 
-  textResults.forEach((obj) => {
+  textResults.every((obj) => {
     for (let key in obj) {
-      updatedMouseBrain(key, obj[key])
       console.log(`interpreted text = ${key}: ${obj[key]}`)
+      return updatedMouseBrain(key, obj[key])
     }
+    return true
   })
 }
 
@@ -120,15 +121,27 @@ void (async function() {
 })()
 
 function updatedMouseBrain(key, obj) {
-  // console.log("object =", obj, typeof obj)
-  switch (key) {
+  let text = obj.toLowerCase()
+  let rightButton = { x: 960 + rng(80), y: 865 + rng(40)}
+  let centerButton = { x: 670 + rng(80), y: 745 + rng(40)}
+  switch (true) { 
     case key.includes('right corner'):
-      if (obj.includes('END')) {
+      if (text.includes('en') || text.includes('lect') || text.includes('ext')) {
         console.log('right click')
-      }
+        Robot.moveMouseSmooth(...Object.values(rightButton))
+        Robot.mouseClick()
+        Robot.moveMouseSmooth(rightButton.x - (50 + rng(50)), rightButton.y - (100 + rng(100)))
+        // return false
+      } 
       break
-  
+    case key.includes('center'):
+      Robot.moveMouseSmooth(...Object.values(centerButton))
+      Robot.mouseClick()
+      break
     default:
+      console.log("default hit")
       break
   }
+  return true
 }
+
